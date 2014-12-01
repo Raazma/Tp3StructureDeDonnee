@@ -50,7 +50,7 @@ void Sudoku::Solutionner()
 bool Sudoku::TrouverSolution(int i, int j)
 {
 	if (SudokuPlein()) // si le sudoku est plein alors la solution est trouver
-		return true;
+		  return true;
 
 	if (Normaliser(i, j) && PositionValide(i, j)) //sassure que la postion est dans le board et verifie que la postion est une position a changer la valeur
 	{
@@ -69,7 +69,7 @@ bool Sudoku::TrouverSolution(int i, int j)
 
 	}
 	else
-		return TrouverSolution(i, j + 1); // la position etait pas valide donc rapelle la fonction avec une nouvelle pos
+	   TrouverSolution(i, j + 1); // la position etait pas valide donc rapelle la fonction avec une nouvelle pos
 
 }
 bool Sudoku::Normaliser(int &i,int &j)
@@ -86,7 +86,7 @@ bool Sudoku::Normaliser(int &i,int &j)
 	if (i < 9)
 		return true;
 
-return false;
+ return false;
 	
 }
 

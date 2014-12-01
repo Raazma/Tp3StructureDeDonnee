@@ -1,9 +1,17 @@
-﻿La génération a démarré 11/30/2014 9:03:33 PM.
+﻿La génération a démarré 11/30/2014 9:35:27 PM.
      1>Projet "C:\Users\fred\Music\Documents\KEE\Tp3Structure\Tp3StructureDeDonnee\Tp3Structure.vcxproj" sur le nœud 2 (Build cible(s)).
-     1>Link:
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Sudoku.cpp
+         Sudoku.cpp
+     1>c:\users\fred\music\documents\kee\tp3structure\tp3structurededonnee\sudoku.cpp(74): warning C4715: 'Sudoku::TrouverSolution' : les chemins de contrôle ne retournent pas tous une valeur
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\fred\Music\Documents\KEE\Tp3Structure\Tp3StructureDeDonnee\Debug\Tp3Structure.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\fred\Music\Documents\KEE\Tp3Structure\Tp3StructureDeDonnee\Debug\Tp3Structure.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\fred\Music\Documents\KEE\Tp3Structure\Tp3StructureDeDonnee\Debug\Tp3Structure.lib" /MACHINE:X86 Debug\Chrono.obj
+         Debug\main.obj
+         Debug\Matrice.obj
+         Debug\Sudoku.obj
          Tp3Structure.vcxproj -> C:\Users\fred\Music\Documents\KEE\Tp3Structure\Tp3StructureDeDonnee\Debug\Tp3Structure.exe
      1>Génération du projet "C:\Users\fred\Music\Documents\KEE\Tp3Structure\Tp3StructureDeDonnee\Tp3Structure.vcxproj" terminée (Build cible(s)).
 
 La génération a réussi.
 
-Temps écoulé 00:00:00.03
+Temps écoulé 00:00:00.91

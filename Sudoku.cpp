@@ -1,32 +1,47 @@
+﻿/*	Projet: Sudoku
+*	Fichier: Sudoku.cpp
+*	Date: 2014-12-09
+*	Fait Par: Frédéric Paquette et Francis Lemaire
+*	Description: Fichier de définition des méthodes de la classe Sudoku qui représente un jeux de Sudoku pouvant se résoudre
+*/
+
 #include "Sudoku.h"
-#include <string>
+
+
 
 using namespace std;
 
-Sudoku::Sudoku()
+// constructeur qui passe au constructeur de base le flux d'entrée
+// et appelle ensuite Solutionner et lui passant le flux de sortie
+Sudoku::Sudoku(ifstream &test, ostream & sortie) :Sudoku(test)
+{
+	Solutionner(sortie);
+}
+
+//Constructeur de base qui prend le flux d'entrée et copie le sudoku dans la structure pour le traitement
+Sudoku::Sudoku(ifstream &test) 
 {
 	//le constructeur est a ameliorer on doit lui passer un ostream et un ifstream en
 	//parametre oh lui de toute faire direct dedans comme je le fait
-	ifstream test;
-	test.open("TheSudoku.txt");
+	
 	char su;
 	int i = 0;
 	int j = 0;
-	//int tesfft = 0;
-	leSudoku_.SetNbLignes(9);
-	leSudoku_.SetNbColonnes(9);
+	
+	leSudoku_.SetNbLignes(NBLIGNE);
+	leSudoku_.SetNbColonnes(NBCOLONE);
 
 	while (!test.eof())
 	{
 		su = test.get();		
 		if (su != '\n')
 		{        
-			if (i <= 8 && j <= 8)
+			if (i < NBLIGNE && j < NBCOLONE)
 			{								
-				leSudoku_[i][j] = atoi(&su); //atoi cast les char en int et ce qui est magique * vaux 0 de base thats magic
+				leSudoku_[i][j] = atoi(&su); //atoi cast les char en int et ce qui est magique, * vaux 0 de base
 				j++;
 			}			
-			if (j == 9)
+			if (j == NBCOLONE)
 			{
 				i++;
 				j = 0;
@@ -36,26 +51,29 @@ Sudoku::Sudoku()
 			
 }
 
-void Sudoku::Solutionner()
+// Méthode public pour trouver la solution et compter le temps que cela prend
+void Sudoku::Solutionner(ostream & sortie)
 {
 	this->horloge.Start();
-	if (TrouverSolution(0, 0)) //si la solution a ete trouver jaffiche
+	if (TrouverSolution(0, 0)) //si la solution a été trouver j'affiche
 	{
 		this->horloge.Stop();
-		AfficherSolution();
+		AfficherSolution(sortie);
+		sortie <<"Temps(µs): "<< this->horloge.Read()<<endl;
 	}
 		
 }
 
-bool Sudoku::TrouverSolution(int i, int j)
+//Trouve la solution du Sudoku
+inline bool Sudoku::TrouverSolution(int i, int j)
 {
 	if (SudokuPlein()) // si le sudoku est plein alors la solution est trouver
 		  return true;
-
-	if (Normaliser(i, j) && PositionValide(i, j)) //sassure que la postion est dans le board et verifie que la postion est une position a changer la valeur
+	
+	if (Normaliser(i, j) && EstPositionValide(i, j)) // s'assure que la postion est dans la grille de jeu et verifie que la postion est une position a changer la valeur
 	{
 
-		for (size_t z = 1; z <= 9; ++z)
+		for (size_t z = 1; z <= NBVALEUR; ++z)
 		{
 			if (ChiffreValide(i, j, z))
 			{
@@ -64,111 +82,110 @@ bool Sudoku::TrouverSolution(int i, int j)
 					return true;
 			}
 		}
-		leSudoku_[i][j] = 0; // aucun chiffre etait valide on doit la reinisialiser a 0 
+		leSudoku_[i][j] = NULLVALUE; // aucun chiffre etait valide on doit la reinisialiser a 0 
 		return false;
 
 	}
 	else
-	   TrouverSolution(i, j + 1); // la position etait pas valide donc rapelle la fonction avec une nouvelle pos
+	  return TrouverSolution(i, j + 1); // la position etait pas valide donc rapelle la fonction avec une nouvelle pos
 
 }
-bool Sudoku::Normaliser(int &i,int &j)
+
+// Normalise s'assure que les valeur passé en paramêtre sons dans les bornes si non nous changeon de ligne
+// et remettons la colone à 0 à moins que nous ayons dépasser alors elle retourne false (autre cas retourne true)
+inline bool Sudoku::Normaliser(int &i,int &j)
 {
-	// normaliser sassure que je suis dans les borns et incremente le i en fonction ou quon est rendu
-	if (i < 9 && j < 9)
+	if (i < NBLIGNE && j < NBCOLONE)
 		return true;
-	if (j >= 9)
+	if (j >= NBCOLONE)
 	{
 		++i;
 		j = 0;
-		return true;
+		return Normaliser(i,j);
 	}   
-	if (i < 9)
-		return true;
 
  return false;
 	
 }
 
-bool Sudoku::PositionValide(int i, int j)
+//Vérifie que la postion est valide (Égale à NULLVALUE)
+inline bool Sudoku::EstPositionValide(int i, int j)
 {
-	//verfie si la postion est valide 
-	if (leSudoku_[i][j] == 0)
+	if (leSudoku_[i][j] == NULLVALUE)
 		return true;
 	else 
 	   return false;
-
 }
-bool Sudoku::ChiffreValide( int i, int j,int z)
+
+// Vérifie que le chiffre est valide
+inline bool Sudoku::ChiffreValide(int i, int j, int z)
 {
-	//verifie que le chiffre est legit
-	return VerificationVerticale(i, j, z) &&
-		      VerificationHorizontal(i, j, z) &&
-	            	VerificationCadran(i - i % 3, j - j % 3, z);
+	return VerificationVerticale(j, z) &&
+		      VerificationHorizontal(i, z) &&
+	            	VerificationCadran(i - i % 3, j - j % 3, z);	
+}
+
+// affiche le Sudoku dans une grille dans la sortie préciser
+void Sudoku::AfficherSolution(ostream & sortie)
+{
+	sortie << StartStopSudokuDeco << endl << ValueSeparatorSudokuDeco << " "; //affichage des décoration
 	
-	//return true;
-}
-
-bool Sudoku::SolutionTrouver()
-{
-	//fonction useless on va pouvoir lefaccer
-	return true;
-}
-
-void Sudoku::AfficherSolution()
-{
-	//a ameliorer laffichage
-	for (size_t i = 0; i < 9; i++)
+	for (size_t i = 0; i < NBLIGNE; i++)
 	{
-		for (size_t j = 0; j < 9; j++)
-		{
-			cout << leSudoku_[i][j];
-		}
-		cout << endl;
-	}
+		if (i!=0)
+			sortie << InterLigneSudokuDeco << endl << ValueSeparatorSudokuDeco << " "; //affichage des décoration
 
-	cout << endl;
-	cout << this->horloge.Read() << endl;
+		for (size_t j = 0; j < NBCOLONE; j++)
+		{
+			sortie << leSudoku_[i][j] << 
+				" " << ValueSeparatorSudokuDeco << " "; //affichage des décoration
+		}
+		sortie << endl;
+	}
+	sortie << StartStopSudokuDeco << endl;	//affichage des décoration
 }
 
-bool Sudoku::SudokuPlein()
+// Vérifie s'il reste des case vide dans le Sudoku
+inline bool Sudoku::SudokuPlein()
 {
-	//verifie que aucune case est a 0
-	for (size_t i = 0; i < 9; i++)
-	   for (size_t j = 0; j < 9; j++)
-	    if (leSudoku_[i][j] == 0)
-		    return false;	
+	for (size_t i = 0; i < NBLIGNE; i++)
+		if (find(leSudoku_[i].begin(), leSudoku_[i].end(), NULLVALUE) != leSudoku_[i].end())
+			return false;
 
  return true;
 }
 
-bool Sudoku::VerificationVerticale(int i, int j, int z)
+//	Vérifie si la valeur de cellule (passé en paramêtre z) se trouve déjà sur la colone (passé en paramêtre j)
+inline bool Sudoku::VerificationVerticale(int j, int z)
 {
-	for (size_t w = 0; w < 9; w++)
+	for (size_t w = 0; w < NBLIGNE; w++)
 	{
 		if (leSudoku_[w][j] == z)
 			return false;
 	}
-
-	   return true;
+		 
+	return true;
 
 }
-bool  Sudoku::VerificationHorizontal(int i, int j, int z)
+
+//	Vérifie si la valeur de cellule (passé en paramêtre z) se trouve déjà sur la ligne (passé en paramêtre i)
+inline bool  Sudoku::VerificationHorizontal(int i, int z)
 {
 
-	for (size_t w = 0; w < 9; w++)
-		if (leSudoku_[i][w] == z)
-			return false;
+	if (find(leSudoku_[i].begin(), leSudoku_[i].end(), z) != leSudoku_[i].end())
+		return false;
 
 	return true;
 
 }
-bool Sudoku::VerificationCadran(int i, int j, int z)
+
+//	Vérifie le cadran 3x3 ou se situe la cellule (passé en paramêtre [i,j]) 
+//	et vérifie si le chiffre (passé en paramêtre z) s'y trouve déjà
+inline bool Sudoku::VerificationCadran(int i, int j, int z)
 {
 	for (size_t w = 0; w < 3; w++)
-		for (size_t x = 0; x < 3; x++)		
-			if (leSudoku_[i + w][j + x] == z)
-				return false;
+		if (find(leSudoku_[i + w].begin() + j, leSudoku_[i + w].begin() + j + 3, z) != leSudoku_[i + w].begin() + j + 3)
+			return false;
 			
 	return true;
 }
